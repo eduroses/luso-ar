@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Jugo de Uva — Realidad Aumentada</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;font-family:Arial,sans-serif}#ui{position:fixed;z-index:20;top:0;left:0;right:0;padding:16px;text-align:center;color:#fff;background:linear-gradient(#111c,transparent);pointer-events:none}#ui h1{margin:0 0 5px;font-size:24px}#ui p{margin:0;font-size:14px}#music{position:fixed;z-index:30;right:14px;top:14px;border:0;border-radius:999px;padding:10px 14px;background:#fff;color:#5a1a8a;font-weight:700}.status{position:fixed;z-index:30;bottom:20px;left:50%;transform:translateX(-50%);background:#111d;color:#fff;border-radius:999px;padding:10px 16px;white-space:nowrap}</style>
+</head>
+<body>
+<div id="ui"><h1>🍇 Jugo de Uva cobra vida</h1><p>Apunta la cámara a la cara de la caja.</p></div>
+<button id="music">🎵 Activar canción</button><div class="status" id="status">Buscando la caja…</div>
+<a-scene mindar-image="imageTargetSrc: ./targets.mind; uiLoading:no; uiError:no; uiScanning:no" color-space="sRGB" renderer="colorManagement:true" vr-mode-ui="enabled:false" device-orientation-permission-ui="enabled:false" embedded>
+<a-camera position="0 0 0" look-controls="enabled:false"></a-camera>
+<a-entity id="target" mindar-image-target="targetIndex:0">
+<a-entity id="character" position="0 0 0.12" scale="0.75 0.75 0.75">
+<!-- cuerpo de caja --> <a-box position="0 0.65 0" width="0.72" height="1.05" depth="0.24" color="#6e24a8"></a-box>
+<a-box position="0 0.65 0.125" width="0.63" height="0.94" depth="0.012" color="#7c2db5"></a-box>
+<a-text value="ROSÉS" align="center" position="0 1.03 0.15" width="1.05" color="#fff"></a-text>
+<a-text value="Jugo de Uva" align="center" position="0 0.68 0.15" width="1.15" color="#ffe600"></a-text>
+<!-- cara inspirada en la uva de la caja -->
+<a-sphere position="-0.16 0.90 0.17" radius="0.105" color="#f4f4f4"></a-sphere><a-sphere position="0.16 0.90 0.17" radius="0.105" color="#f4f4f4"></a-sphere>
+<a-sphere position="-0.13 0.90 0.255" radius="0.055" color="#1ca8dc"></a-sphere><a-sphere position="0.13 0.90 0.255" radius="0.055" color="#1ca8dc"></a-sphere>
+<a-sphere position="-0.12 0.91 0.30" radius="0.023" color="#111"></a-sphere><a-sphere position="0.12 0.91 0.30" radius="0.023" color="#111"></a-sphere>
+<a-box position="0 0.68 0.17" width="0.26" height="0.11" depth="0.035" color="#111"></a-box><a-sphere position="0 0.65 0.20" radius="0.045" color="#f34a9b"></a-sphere>
+<!-- brazos/manos --> <a-entity id="armL" position="-0.43 0.65 0"><a-cylinder radius="0.055" height="0.45" rotation="0 0 65" color="#6e24a8"></a-cylinder><a-sphere position="-0.21 -0.16 0" radius="0.075" color="#6e24a8"></a-sphere></a-entity>
+<a-entity id="armR" position="0.43 0.65 0"><a-cylinder radius="0.055" height="0.45" rotation="0 0 -65" color="#6e24a8"></a-cylinder><a-sphere position="0.21 -0.16 0" radius="0.075" color="#6e24a8"></a-sphere></a-entity>
+<!-- piernas/zapatos --> <a-entity id="legL" position="-0.18 0.05 0"><a-cylinder radius="0.065" height="0.42" color="#6e24a8"></a-cylinder><a-box position="0 -0.23 0.07" width="0.25" height="0.12" depth="0.27" color="#ffe600"></a-box></a-entity>
+<a-entity id="legR" position="0.18 0.05 0"><a-cylinder radius="0.065" height="0.42" color="#6e24a8"></a-cylinder><a-box position="0 -0.23 0.07" width="0.25" height="0.12" depth="0.27" color="#ffe600"></a-box></a-entity>
+<!-- racimo/hojita --> <a-sphere position="-0.23 1.20 0" radius="0.07" color="#52207f"></a-sphere><a-sphere position="-0.11 1.24 0" radius="0.07" color="#52207f"></a-sphere><a-sphere position="0 1.21 0" radius="0.07" color="#52207f"></a-sphere><a-sphere position="0.11 1.24 0" radius="0.07" color="#52207f"></a-sphere><a-sphere position="0.23 1.20 0" radius="0.07" color="#52207f"></a-sphere>
+</a-entity></a-entity></a-scene>
+<script>
+const target=document.querySelector('#target'),char=document.querySelector('#character'),status=document.querySelector('#status'),btn=document.querySelector('#music');let audio;
+function sing(){if(!audio)audio=new(window.AudioContext||window.webkitAudioContext)();audio.resume();const seq=[392,440,523,440,392,330,392,523,587,523,440,392];seq.forEach((f,i)=>{const o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.08;o.connect(g).connect(audio.destination);o.start(audio.currentTime+i*.16);o.stop(audio.currentTime+i*.16+.13)});if('speechSynthesis'in window){setTimeout(()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('Jugo de uva');u.lang='es-UY';u.rate=1.15;u.pitch=1.25;u.volume=.9;speechSynthesis.speak(u)},1250)}}
+btn.onclick=()=>{sing();btn.textContent='🎵 Canción activa'};
+target.addEventListener('targetFound',()=>{status.textContent='🎉 ¡Jugo de Uva cobró vida!';char.setAttribute('animation__jump','property:position;from:0 0 0.12;to:0 .12 .12;dur:300;dir:alternate;loop:4;easing:easeInOutSine');['armL','armR','legL','legR'].forEach((id,i)=>document.querySelector('#'+id).setAttribute('animation__dance','property:rotation;to:0 0 '+(i%2?-18:18)+';dur:260;dir:alternate;loop:true;easing:easeInOutSine'));if(audio)sing()});target.addEventListener('targetLost',()=>status.textContent='Apunta nuevamente a la caja…');
+</script>
+</body></html>
