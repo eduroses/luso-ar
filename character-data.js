@@ -1,0 +1,1 @@
+window.CHARACTER_GLB_DATA="AA==";
